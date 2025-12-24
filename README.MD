@@ -11,7 +11,7 @@ Default Prefix - `$pook `
 
 ### Movie List
 - [x] **Search** - `<prefix> search [movie_name]` - Search movies in TMDB 
-- [ ] **Set Day** - `<prefix> set-day [movie_tmdb_id] [day_number] [stream_start]` - Select a movie for a certain day in October. Overwrites if there is a selected movie for that day.
+- [ ] **Set Day** - `<prefix> set_day [day_number] [stream_start] [movie_tmdb_id] ` - Select a movie for a certain day in October. Overwrites if there is a selected movie for that day.
 - [ ] **Get Day** - `<prefix> get-day [day_number]` - Displays the movie details and its ratings for a certain day in October. 
 - [ ] **List** - `<prefix> list` - Shows the movie list
 - [ ] **Announce** - `<prefix> announce` - Send a message to announce the movie of the current day. 
