@@ -5,7 +5,7 @@ Default Prefix - `$pook `
 
 ## Pre-requisite
 - [x] TMDB API Integration
-- [ ] SQLITE for storing movie list and ratings
+- [x] SQLITE for storing movie list and ratings
 
 ## Commands
 
