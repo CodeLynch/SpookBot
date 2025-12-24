@@ -1,5 +1,6 @@
 import discord
 import os
+from datetime import datetime, timedelta
 from discord_select import DiscordSelect
 from movie import Movie
 from movie_sqli import MovieSqlite
@@ -31,6 +32,11 @@ async def greet(ctx):
 
 
 @bot.command()
+async def list(ctx):
+    await ctx.send(MovieSvc.listMovies())
+
+
+@bot.command()
 async def say(ctx, *, arg):
     await ctx.send(arg)
 
@@ -53,14 +59,22 @@ async def search(ctx, *, arg):
 
 
 @bot.command()
-async def set_day(ctx, day, time, movie_id):
+async def set_day(ctx, day, start_time, movie_id):
     movie = await TMDBSvc.getMovie(movie_id)
 
-    movieObj = Movie(day, movie["id"], movie["original_title"], time, time, ctx.author)
-
-    await ctx.send(
-        f"to insert: {movieObj.movie_title} for day {movieObj.day} at {movieObj.showing_start} as decided by {movieObj.picked_by}"
+    temp_start = datetime(
+        100, 1, 1, int(start_time.split(":")[0]), int(start_time.split(":")[1]), 0
     )
+    temp_end = temp_start + timedelta(minutes=int(movie["runtime"]))
+    end_time = f"{temp_end.hour}:{temp_end.minute}"
+
+    movie_obj = Movie(
+        day, movie["id"], movie["original_title"], start_time, end_time, str(ctx.author)
+    )
+
+    MovieSvc.insertMovie(movie_obj)
+
+    await ctx.send(f"✅ Movie selected for day {day}")
 
 
 @bot.command()

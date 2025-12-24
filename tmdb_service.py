@@ -12,7 +12,7 @@ class TMDBService:
 
     async def search(self, query):
         query = query.replace(" ", "+")
-        url = f"{self.TMDB_URL}/search/movie?query={query}"
+        url = f"{self.TMDB_URL}/search/movie?query={query}&language=en-US"
 
         print(f"fetching {url}...")
 
@@ -24,7 +24,7 @@ class TMDBService:
         return res
 
     async def getMovie(self, id):
-        url = f"{self.TMDB_URL}/movie/{int(id)}"
+        url = f"{self.TMDB_URL}/movie/{int(id)}?language=en-US"
 
         print(f"fetching {url}...")
 
