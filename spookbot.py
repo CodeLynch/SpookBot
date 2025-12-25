@@ -27,6 +27,28 @@ async def on_ready():
 
 
 @bot.command()
+async def get_day(ctx, arg):
+    result = MovieSvc.getDay(arg)
+
+    if result is None:
+        await ctx.send("No movie picked for that day...")
+
+    day = result[0]
+    tmdb_id = result[1]
+    title_with_year = result[2]
+    stream_start = result[3]
+    stream_end = result[4]
+    picker = result[5]
+
+    movie = await TMDBSvc.getMovie(tmdb_id)
+    await ctx.send(
+        TMDBSvc.formatDayDetails(
+            day, title_with_year, stream_start, stream_end, picker, movie
+        )
+    )
+
+
+@bot.command()
 async def greet(ctx):
     await ctx.send("the spook says hi!")
 
@@ -68,8 +90,10 @@ async def set_day(ctx, day, start_time, movie_id):
     temp_end = temp_start + timedelta(minutes=int(movie["runtime"]))
     end_time = f"{temp_end.hour}:{temp_end.minute}"
 
+    title_with_year = f"{movie["original_title"]} ({datetime.strptime(movie["release_date"], '%Y-%m-%d').year})"
+
     movie_obj = Movie(
-        day, movie["id"], movie["original_title"], start_time, end_time, str(ctx.author)
+        day, movie["id"], title_with_year, start_time, end_time, str(ctx.author)
     )
 
     MovieSvc.insertMovie(movie_obj)

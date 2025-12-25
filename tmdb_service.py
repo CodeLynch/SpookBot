@@ -36,4 +36,9 @@ class TMDBService:
         return res
 
     def formatMovieDetails(self, movie_json):
-        return f"## 📽 {movie_json['original_title']}\n🔢 **ID**: {movie_json['id']}\n📅  **Date**: {movie_json['release_date']}\n🎬  **Synopsis**: {movie_json['overview']}\n**Runtime**: {movie_json['runtime']} mins\n [Poster]({self.TMDB_IMAGE_URL}{movie_json['poster_path']})"
+        return f"## 📽 {movie_json['original_title']}\n🔢 **ID**: {movie_json['id']}\n📅  **Date**: {movie_json['release_date']}\n🎬  **Synopsis**: {movie_json['overview']}\n**Runtime**: {movie_json['runtime']} mins\n\n [Poster]({self.TMDB_IMAGE_URL}{movie_json['poster_path']})"
+
+    def formatDayDetails(
+        self, day, title_w_year, stream_start, stream_end, picker, movie_json
+    ):
+        return f"🎃 **SPOOKTOBER DAY {day}** 🎃\n**{title_w_year}**\n {movie_json['overview']} \n🎞 **Runtime**: {movie_json['runtime']} mins \n🍿**Tentative Streaming Time**: {stream_start}-{stream_end}\n🔍**Picked by**: {picker}\n\n [Poster]({self.TMDB_IMAGE_URL}{movie_json['poster_path']})"

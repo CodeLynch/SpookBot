@@ -25,6 +25,19 @@ class MovieSqlite:
 
         self.conn.close()
 
+    def getDay(self, day):
+        self.connect()
+
+        self.cur.execute(
+            "SELECT * FROM movies WHERE day=?",
+            (day,),
+        )
+
+        result = self.cur.fetchone()
+        self.cur.close()
+
+        return result
+
     def insertMovie(self, movie: Movie):
         self.connect()
 
@@ -70,9 +83,10 @@ class MovieSqlite:
 
         print("listing movies...")
 
-        spook_list = f"# 🎃 SPOOKTOBER {datetime.now().year} MOVIE LIST 🎃\n"
+        spook_list = f"# 🎃 SPOOKTOBER {datetime.now().year} MOVIE LIST 🎃\n```"
         self.cur.execute("SELECT day, movie_title FROM movies ORDER BY day DESC")
         res_dict = dict(self.cur.fetchall())
         for i in range(0, 31):
             spook_list = spook_list + f"{i + 1}. {res_dict.get(i+1, "N/A")}\n"
+        spook_list = spook_list + "```"
         return spook_list
