@@ -1,5 +1,6 @@
 import os
 import requests
+from discord import Embed
 
 
 class TMDBService:
@@ -11,34 +12,61 @@ class TMDBService:
         self.headers = {"Authorization": f"Bearer {self.TMDB_TOKEN}"}
 
     async def search(self, query):
-        query = query.replace(" ", "+")
-        url = f"{self.TMDB_URL}/search/movie?query={query}&language=en-US"
+        try:
+            query = query.replace(" ", "+")
+            url = f"{self.TMDB_URL}/search/movie?query={query}&language=en-US"
 
-        print(f"fetching {url}...")
+            print(f"fetching {url}...")
 
-        r = requests.get(url, headers=self.headers)
-        res = r.json()
+            r = requests.get(url, headers=self.headers)
+            res = r.json()
 
-        print(f"response received, {len(res['results'])} results")
+            print(f"response received, {len(res['results'])} results")
 
-        return res
+            return res
+        except:
+            print("TMDBService exception occured!")
+            raise Exception("TMDBServiceException")
 
     async def getMovie(self, id):
-        url = f"{self.TMDB_URL}/movie/{int(id)}?language=en-US"
+        try:
+            url = f"{self.TMDB_URL}/movie/{int(id)}?language=en-US"
 
-        print(f"fetching {url}...")
+            print(f"fetching {url}...")
 
-        r = requests.get(url, headers=self.headers)
-        res = r.json()
+            r = requests.get(url, headers=self.headers)
+            res = r.json()
 
-        print(f"response received, sending result...")
+            print(f"response received, sending result...")
 
-        return res
+            return res
+        except:
+            print("TMDBService exception occured!")
+            raise Exception("TMDBServiceException")
 
     def formatMovieDetails(self, movie_json):
-        return f"## 📽 {movie_json['original_title']}\n🔢 **ID**: {movie_json['id']}\n📅  **Date**: {movie_json['release_date']}\n🎬  **Synopsis**: {movie_json['overview']}\n**Runtime**: {movie_json['runtime']} mins\n\n [Poster]({self.TMDB_IMAGE_URL}{movie_json['poster_path']})"
+        embd = Embed(
+            title=f"📽 {movie_json['title']}",
+            description=f"🔢 **ID**: {movie_json['id']}\n📅  **Date**: {movie_json['release_date']}\n🎬  **Synopsis**: {movie_json['overview']}\n**Runtime**: {movie_json['runtime']} mins",
+        )
+        embd.set_image(url=f"{self.TMDB_IMAGE_URL}{movie_json['poster_path']}")
+
+        return embd
 
     def formatDayDetails(
-        self, day, title_w_year, stream_start, stream_end, picker, movie_json
+        self,
+        day,
+        title_w_year,
+        stream_start,
+        stream_end,
+        picker,
+        picker_icon_url,
+        movie_json,
     ):
-        return f"🎃 **SPOOKTOBER DAY {day}** 🎃\n**{title_w_year}**\n {movie_json['overview']} \n🎞 **Runtime**: {movie_json['runtime']} mins \n🍿**Tentative Streaming Time**: {stream_start}-{stream_end}\n🔍**Picked by**: {picker}\n\n [Poster]({self.TMDB_IMAGE_URL}{movie_json['poster_path']})"
+        embd = Embed(
+            title=f"🎃 **SPOOKTOBER DAY {day}** 🎃",
+            description=f"**{title_w_year}**\n {movie_json['overview']} \n🎞 **Runtime**: {movie_json['runtime']} mins \n🍿**Tentative Streaming Time**: {stream_start}-{stream_end}\n",
+        )
+        embd.set_footer(text=f"Picked by: {picker}", icon_url=f"{picker_icon_url}")
+        embd.set_image(url=f"{self.TMDB_IMAGE_URL}{movie_json['poster_path']}")
+        return embd

@@ -1,12 +1,16 @@
 import discord
-from discord.ui import Select
+from discord.ui import Select, View
 from tmdb_service import TMDBService
 
 
 def toSelectOption(result):
+    truncated_title = (
+        (result["title"][:50] + "..") if len(result["title"]) > 50 else result["title"]
+    )
+
     return discord.SelectOption(
         label=f"{result['id']}",
-        description=f"{result['original_title']} - {result['release_date']}",
+        description=f"{truncated_title} - {result['release_date']}",
     )
 
 
@@ -18,4 +22,7 @@ class DiscordSelect(Select):
         TMDBSvc = TMDBService()
 
         res = await TMDBSvc.getMovie(self.values[0])
-        await interaction.response.send_message(TMDBSvc.formatMovieDetails(res))
+
+        self.disabled = True
+        await interaction.response.edit_message(view=View().add_item(self))
+        await interaction.followup.send(embed=TMDBSvc.formatMovieDetails(res))

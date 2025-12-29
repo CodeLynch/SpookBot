@@ -19,7 +19,8 @@ class MovieSqlite:
             movie_title text NOT NULL, 
             showing_start text NOT NULL, 
             showing_end text NOT NULL, 
-            picked_by text NOT NULL)
+            picked_by text NOT NULL,
+            picker_avatar text NOT NULL)
             """
         )
 
@@ -38,6 +39,37 @@ class MovieSqlite:
 
         return result
 
+    def deleteDay(self, day):
+        self.connect()
+
+        self.cur.execute(
+            "DELETE FROM movies WHERE day=?",
+            (day,),
+        )
+
+        print("committing changes...")
+
+        self.conn.commit()
+
+        self.cur.close()
+
+        return
+
+    def deleteAll(self):
+        self.connect()
+
+        self.cur.execute(
+            "DELETE FROM movies",
+        )
+
+        print("committing changes...")
+
+        self.conn.commit()
+
+        self.cur.close()
+
+        return
+
     def insertMovie(self, movie: Movie):
         self.connect()
 
@@ -49,7 +81,7 @@ class MovieSqlite:
 
         if self.cur.fetchone() is None:
             self.cur.execute(
-                "INSERT INTO movies(day, tmdb_id, movie_title, showing_start, showing_end, picked_by) VALUES (?,?,?,?,?,?)",
+                "INSERT INTO movies(day, tmdb_id, movie_title, showing_start, showing_end, picked_by, picker_avatar) VALUES (?,?,?,?,?,?,?)",
                 (
                     movie.day,
                     movie.tmdb_id,
@@ -57,18 +89,20 @@ class MovieSqlite:
                     movie.showing_start,
                     movie.showing_end,
                     movie.picked_by,
+                    movie.picker_avatar,
                 ),
             )
             print("day set...")
         else:
             self.cur.execute(
-                "UPDATE movies SET tmdb_id=?, movie_title=?, showing_start=?, showing_end=?, picked_by=? WHERE day=?",
+                "UPDATE movies SET tmdb_id=?, movie_title=?, showing_start=?, showing_end=?, picked_by=?, picker_avatar = ? WHERE day=?",
                 (
                     movie.tmdb_id,
                     movie.movie_title,
                     movie.showing_start,
                     movie.showing_end,
                     movie.picked_by,
+                    movie.picker_avatar,
                     movie.day,
                 ),
             )
