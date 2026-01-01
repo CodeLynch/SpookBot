@@ -22,12 +22,12 @@ MY_ID = os.getenv("MY_ID")
 TMDBSvc = TMDBService()
 MovieSvc = MovieSqlite()
 
-bot = commands.Bot(command_prefix="$pook ", intents=intents)
+bot = commands.Bot(command_prefix="$pook ", intents=intents, help_command=None)
 spookies = [
-    "🎃Spooktober continues...🦇"
-    "🌃 'tis a good night for spook 👻"
-    "🎃 Another day, another spook 🎃"
-    "🕸️🦇🦇 the spook welcomes you to a mysterious night 🦇🦇🕸️"
+    "🎃Spooktober continues...🦇",
+    "🌃 'tis a good night for spook 👻",
+    "🎃 Another day, another spook 🎃",
+    "🕸️🦇🦇 the spook welcomes you to a mysterious night 🦇🦇🕸️",
     "🎃 the spook 🎃 conjures a magical night 🧙",
     "🧡 the spook 🧡 delivers another treat 🍭",
     "🎃 the spook brings a dark night 🌃🧛",
@@ -37,6 +37,23 @@ spookies = [
     "💀 the spook 👻 beckons you to watch 🌑",
     "🎃 The spook 🎃 is out to get you 🪓 😱",
 ]
+command_guide = """
+### 🎦 Movie List \n
+- **Search** - `<prefix> search [movie_name]` - search movies in TMDB  
+- **Set Day** - `<prefix> set_day [day_number] [stream_start] [movie_tmdb_id] ` - select a movie for a certain day in October. Overwrites if there is a selected movie for that day.  
+- **Get Day** - `<prefix> get_day [day_number]` - displays the movie details for a certain day in October.  
+- **Clear Day** - `<prefix> clear_day [day_number]` - clears a certain day in October.  
+- **List** - `<prefix> list` - shows the movie list  
+- **Clear List** - `<prefix> clear_list` - clears the movie list.  
+- **Announce** - `<prefix> announce` - send a message to announce the movie of the current day.  
+### ⭐ Movie Ratings \n
+- (WIP) **Rate** - `<prefix> rate [day_number] [rating]` - add a rating to a movie of a particular day.  
+- (WIP) **Ratings** - `<prefix> ratings [day_number]` - check ratings of a movie of a particular day.  
+### ⚙️ Misc \n
+- **Say** - `<prefix> say [message]` - send a message.  
+- **Spook** - `<prefix> spook` - send a random spiel about the spook.  
+- **Help** - `<prefix> help`- display commands.  
+"""
 
 
 async def send_and_raise_error(ctx, message, error: type[Exception]):
@@ -76,7 +93,8 @@ async def get_day(ctx, arg):
         result = MovieSvc.getDay(arg)
 
         if result is None:
-            await ctx.send("No movie picked for that day...")
+            await ctx.send("❌ No movie picked for that day...")
+            return
 
         day = result[0]
         tmdb_id = result[1]
@@ -108,6 +126,16 @@ async def greet(ctx):
 
 
 @bot.command()
+async def help(ctx):
+    embd = discord.Embed(
+        title=f"SpookBot Commands",
+        description=f"{command_guide}",
+    )
+
+    await ctx.send(embed=embd)
+
+
+@bot.command()
 async def list(ctx):
     await ctx.send(MovieSvc.listMovies())
 
@@ -130,7 +158,7 @@ async def search(ctx, *, arg):
             select = DiscordSelect(res)
 
             await ctx.send(
-                "Please Select from query results",
+                "Please select from the query results",
                 view=View().add_item(select),
             )
     except:
