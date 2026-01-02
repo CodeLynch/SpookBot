@@ -21,7 +21,7 @@ Default Prefix - `$pook `
 ### Movie Ratings
 - [x] **Rate** - `<prefix> rate [day_number] [rating] [comment(optional)]` - add a rating of a movie for a particular day.  
 - [x] **Ratings** - `<prefix> ratings [day_number]` - check ratings of a movie for a particular day.  
-- [ ] **Delete Rating** - `<prefix> delete_rating [day_number]` - remove your rating of a movie for a particular day.  
+- [x] **Delete Rating** - `<prefix> delete_rating [day_number]` - remove your rating of a movie for a particular day.  
 
 ### Misc
 - [x] **Say** - `<prefix> say [message]` - send a message.
