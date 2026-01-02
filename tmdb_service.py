@@ -70,3 +70,30 @@ class TMDBService:
         embd.set_footer(text=f"Picked by: {picker}", icon_url=f"{picker_icon_url}")
         embd.set_image(url=f"{self.TMDB_IMAGE_URL}{movie_json['poster_path']}")
         return embd
+
+    def formatMovieDetails(self, movie_json):
+        embd = Embed(
+            title=f"📽 {movie_json['title']}",
+            description=f"🔢 **ID**: {movie_json['id']}\n📅  **Date**: {movie_json['release_date']}\n🎬  **Synopsis**: {movie_json['overview']}\n**Runtime**: {movie_json['runtime']} mins",
+        )
+        embd.set_image(url=f"{self.TMDB_IMAGE_URL}{movie_json['poster_path']}")
+
+        return embd
+
+    def formatDayReviews(
+        self,
+        day,
+        title_w_year,
+        stream_start,
+        stream_end,
+        picker,
+        picker_icon_url,
+        movie_json,
+    ):
+        embd = Embed(
+            title=f"🎃 **SPOOKTOBER DAY {day}** 🎃",
+            description=f"**{title_w_year}**\n {movie_json['overview']} \n🎞 **Runtime**: {movie_json['runtime']} mins \n🍿**Tentative Streaming Time**: {stream_start}-{stream_end}\n",
+        )
+        embd.set_footer(text=f"Picked by: {picker}", icon_url=f"{picker_icon_url}")
+        embd.set_image(url=f"{self.TMDB_IMAGE_URL}{movie_json['poster_path']}")
+        return embd

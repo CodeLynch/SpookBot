@@ -1,11 +1,12 @@
 from datetime import datetime
 import sqlite3
 from movie import Movie
+from review import Review
 
 
-class MovieSqlite:
+class Sqlite:
     def connect(self):
-        self.conn = sqlite3.connect("movie.db")
+        self.conn = sqlite3.connect("spooky.db")
 
         self.cur = self.conn.cursor()
 
@@ -23,6 +24,17 @@ class MovieSqlite:
             picker_avatar text NOT NULL)
             """
         )
+        self.cur.execute(
+            """ CREATE TABLE IF NOT EXISTS reviews ( 
+            day integer NOT NULL, 
+            rater_id text NOT NULL, 
+            rater_name text NOT NULL, 
+            rater_avatar text NOT NULL, 
+            score text NOT NULL, 
+            comment text,
+            PRIMARY KEY (rater_id, day))
+            """
+        )
 
         self.conn.close()
 
@@ -35,6 +47,19 @@ class MovieSqlite:
         )
 
         result = self.cur.fetchone()
+        self.cur.close()
+
+        return result
+
+    def getDayReviews(self, day):
+        self.connect()
+
+        self.cur.execute(
+            "SELECT * FROM reviews LEFT JOIN movies USING(day) WHERE day=?",
+            (day,),
+        )
+
+        result = self.cur.fetchall()
         self.cur.close()
 
         return result
@@ -107,6 +132,51 @@ class MovieSqlite:
                 ),
             )
             print("day updated...")
+        print("committing changes...")
+        self.conn.commit()
+        print("changes committed, closing connection...")
+        self.conn.close()
+
+    def insertReview(self, review: Review):
+        self.connect()
+
+        print(
+            f"checking if {review.rater_name} already has review for day {review.day}..."
+        )
+        self.cur.execute(
+            "SELECT * FROM reviews WHERE day=? AND rater_id=?",
+            (
+                review.day,
+                review.rater_id,
+            ),
+        )
+
+        if self.cur.fetchone() is None:
+            self.cur.execute(
+                "INSERT INTO reviews(day, rater_id, rater_name, rater_avatar, score, comment) VALUES (?,?,?,?,?,?)",
+                (
+                    review.day,
+                    review.rater_id,
+                    review.rater_name,
+                    review.rater_avatar,
+                    review.score,
+                    review.comment,
+                ),
+            )
+            print("review added...")
+        else:
+            self.cur.execute(
+                "UPDATE reviews SET rater_name=?, rater_avatar=?, score=?, comment=? WHERE day=? AND rater_id=?",
+                (
+                    review.rater_name,
+                    review.rater_avatar,
+                    review.score,
+                    review.comment,
+                    review.day,
+                    review.rater_id,
+                ),
+            )
+            print("review updated...")
         print("committing changes...")
         self.conn.commit()
         print("changes committed, closing connection...")
