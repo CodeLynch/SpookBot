@@ -80,6 +80,22 @@ class Sqlite:
 
         return
 
+    def deleteReview(self, day, user_id):
+        self.connect()
+
+        self.cur.execute(
+            "DELETE FROM reviews WHERE day=? AND rater_id = ?",
+            (day, user_id),
+        )
+
+        print("committing changes...")
+
+        self.conn.commit()
+
+        self.cur.close()
+
+        return
+
     def deleteAll(self):
         self.connect()
 

@@ -379,6 +379,30 @@ async def ratings(ctx, day):
 
 
 @bot.command()
+async def delete_rating(ctx, day):
+    try:
+        # day argument validations
+        if not isNumber(day):
+            await send_and_raise_error(ctx, "❌ day argument should be int", TypeError)
+        int_day = int(day)
+        if int_day < 1 or int_day > 31:
+            await send_and_raise_error(ctx, "❌ day argument beyond range", Exception)
+
+        if sqliteSvc.getDay(day) is None:
+            await ctx.send("❌ No movie picked for that day...")
+            return
+
+        sqliteSvc.deleteReview(day, str(ctx.author.id))
+
+        await ctx.send("✅ your rating has been removed.")
+    except Exception as e:
+        print(f"error: {repr(e)}")
+        await ctx.send(
+            f"❌ Exception occured while deleting rating, please try again..."
+        )
+
+
+@bot.command()
 async def spook(ctx):
     await ctx.send(random.choice(spookies))
 
